@@ -29,14 +29,14 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 10-14-2026 16:23
-last_updated: 10-14-2026 16:23
+last_updated: 10-15-2026 10:43
 project: FixNear
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 development_status:
-  epic-1: backlog
-  1-1-provision-supabase-project-in-ap-south-1-secrets-verificatio: backlog
+  epic-1: in-progress
+  1-1-provision-supabase-project-in-ap-south-1-secrets-verificatio: review
   1-2-pre-implementation-phone-authentication-integration-spike-ga: backlog
   1-3-next-js-15-monolith-scaffolding-layering-conventions-design: backlog
   1-4-shared-root-layout-shell-wordmark-component: backlog
