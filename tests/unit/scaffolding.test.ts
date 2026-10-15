@@ -180,11 +180,96 @@ test('Next.js 15 Monolith Scaffolding & Design System', async (t) => {
       'src/components/providers',
       'src/app/(public)',
       'src/app/(provider)',
+      'src/app/(provider)/provider',
       'src/app/(admin)',
+      'src/app/(admin)/admin',
     ];
 
     for (const dir of requiredDirs) {
       assert.ok(fs.existsSync(path.resolve(process.cwd(), dir)), `Directory ${dir} must exist`);
     }
   });
+
+  await t.test('Scenario 6: Route Group Isolation & Portal URL Hierarchy', async () => {
+    // Provider pages must be placed under src/app/(provider)/provider/ to resolve to /provider/*
+    const providerDashboard = path.resolve(process.cwd(), 'src/app/(provider)/provider/dashboard/page.tsx');
+    assert.ok(fs.existsSync(providerDashboard), 'Provider dashboard page must exist under src/app/(provider)/provider/dashboard/page.tsx');
+
+    const mismatchedProviderDashboard = path.resolve(process.cwd(), 'src/app/(provider)/dashboard');
+    assert.ok(!fs.existsSync(mismatchedProviderDashboard), 'src/app/(provider)/dashboard must not exist (would mismatch to /dashboard)');
+
+    // Admin pages must be placed under src/app/(admin)/admin/ to resolve to /admin/*
+    const adminDashboard = path.resolve(process.cwd(), 'src/app/(admin)/admin/dashboard/page.tsx');
+    assert.ok(fs.existsSync(adminDashboard), 'Admin dashboard page must exist under src/app/(admin)/admin/dashboard/page.tsx');
+
+    const mismatchedAdminDashboard = path.resolve(process.cwd(), 'src/app/(admin)/dashboard');
+    assert.ok(!fs.existsSync(mismatchedAdminDashboard), 'src/app/(admin)/dashboard must not exist (would collide with /dashboard)');
+
+    // Public pages must resolve to /
+    const publicPage = path.resolve(process.cwd(), 'src/app/(public)/page.tsx');
+    assert.ok(fs.existsSync(publicPage), 'Public page must exist under src/app/(public)/page.tsx');
+
+    // If production build artifacts exist, verify compiled route bindings in app-path-routes-manifest.json
+    const manifestPath = path.resolve(process.cwd(), '.next/app-path-routes-manifest.json');
+    if (fs.existsSync(manifestPath)) {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+      assert.equal(
+        manifest['/(provider)/provider/dashboard/page'],
+        '/provider/dashboard',
+        'Provider dashboard route must resolve to /provider/dashboard'
+      );
+      assert.equal(
+        manifest['/(provider)/dashboard/page'],
+        undefined,
+        'Old /dashboard route must not exist in provider routes'
+      );
+      assert.equal(
+        manifest['/(admin)/admin/dashboard/page'],
+        '/admin/dashboard',
+        'Admin dashboard route must resolve to /admin/dashboard'
+      );
+      assert.equal(
+        manifest['/(public)/page'],
+        '/',
+        'Public root route must resolve to /'
+      );
+    }
+
+    // If Next.js build output exists, run live server check verifying /provider/dashboard returns 200 and /dashboard returns 404
+    const buildIdPath = path.resolve(process.cwd(), '.next/BUILD_ID');
+    if (fs.existsSync(buildIdPath)) {
+      const { spawn } = await import('node:child_process');
+      const server = spawn('npx', ['next', 'start', '-p', '0']);
+      let port: string | undefined;
+
+      const readyPromise = new Promise<string>((resolve, reject) => {
+        server.stdout.on('data', (data: Buffer) => {
+          const text = data.toString();
+          const match = text.match(/http:\/\/localhost:(\d+)/);
+          if (match) {
+            port = match[1];
+            resolve(port);
+          }
+        });
+        server.on('error', reject);
+        server.on('exit', (code) => {
+          if (code !== 0 && !port) reject(new Error(`Next start exited with code ${code}`));
+        });
+      });
+
+      try {
+        const assignedPort = await readyPromise;
+        const resProvider = await fetch(`http://localhost:${assignedPort}/provider/dashboard`);
+        assert.equal(resProvider.status, 200, '/provider/dashboard must return HTTP 200');
+        const providerHtml = await resProvider.text();
+        assert.ok(providerHtml.includes('Provider Dashboard'), 'Provider dashboard page must render content');
+
+        const resDashboard = await fetch(`http://localhost:${assignedPort}/dashboard`);
+        assert.equal(resDashboard.status, 404, '/dashboard must return HTTP 404');
+      } finally {
+        server.kill();
+      }
+    }
+  });
 });
+

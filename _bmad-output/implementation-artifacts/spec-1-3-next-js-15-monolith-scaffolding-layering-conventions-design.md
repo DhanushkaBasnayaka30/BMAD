@@ -66,9 +66,9 @@ context:
 - `src/app/(public)/layout.tsx` -- Public directory route group layout shell.
 - `src/app/(public)/page.tsx` -- Public entry placeholder at `/`.
 - `src/app/(provider)/layout.tsx` -- Provider portal route group layout shell.
-- `src/app/(provider)/dashboard/page.tsx` -- Provider portal entry placeholder at `/dashboard`.
+- `src/app/(provider)/provider/dashboard/page.tsx` -- Provider portal entry placeholder at `/provider/dashboard`.
 - `src/app/(admin)/layout.tsx` -- Admin moderation portal route group layout shell.
-- `src/app/(admin)/dashboard/page.tsx` -- Admin portal entry placeholder at `/dashboard`.
+- `src/app/(admin)/admin/dashboard/page.tsx` -- Admin portal entry placeholder at `/admin/dashboard`.
 - `src/components/providers/QueryProvider.tsx` -- Client component establishing `QueryClient` singleton in React state and mounting `QueryClientProvider`.
 - `src/types/index.ts` -- Architectural export barrel for domain types.
 - `src/services/canary.service.ts` -- Canary service demonstrating `import 'server-only'` guardrail and business logic execution.
@@ -116,7 +116,7 @@ context:
 - Implemented `src/app/globals.css` with Tailwind directives and 16px body typography default, and `src/app/layout.tsx` mounting `QueryProvider` with responsive mobile viewport.
 - Scaffolded route groups:
   - `(public)`: `layout.tsx` and placeholder `page.tsx` resolving to `/`.
-  - `(provider)`: `layout.tsx` and placeholder `dashboard/page.tsx` resolving to `/dashboard`.
+  - `(provider)`: `layout.tsx` and placeholder `provider/dashboard/page.tsx` resolving to `/provider/dashboard`.
   - `(admin)`: `layout.tsx` and placeholder `admin/dashboard/page.tsx` resolving to `/admin/dashboard` (preventing `/` and `/dashboard` route collisions).
 - Created 5 layering directories (`types/`, `services/`, `actions/`, `hooks/`, `components/`) and established an interconnected canary vertical slice:
   - `src/types/index.ts` declaring `CanaryServiceResponse` and `CanaryActionResult`.
@@ -124,7 +124,7 @@ context:
   - `src/actions/canary.action.ts` declared with `'use server'` and delegating to `canaryService`.
   - `src/hooks/use-canary.ts` client hook wrapping `canaryAction` via TanStack `useQuery`.
   - `src/components/ui/index.ts` export barrel.
-- Added `tests/unit/scaffolding.test.ts` verifying design tokens, `cn` helper, `server-only` runtime rejection, canary slice contracts, and directory existence. All 15 unit tests passed.
+- Added `tests/unit/scaffolding.test.ts` verifying design tokens, `cn` helper, `server-only` runtime rejection, canary slice contracts, directory existence, and route group isolation. All 17 unit tests passed.
 - Fixed `NODE_ENV: 'test'` type requirement in `tests/unit/verify-supabase.test.ts` introduced by Next.js global types.
 - Added `*.tsbuildinfo` to `.gitignore`.
 - Verified `npm run build`, `npm run typecheck`, `npm run test:unit`, `npm run verify:supabase`, and `npm run test:spike` all execute and exit with code 0.
@@ -173,6 +173,10 @@ context:
   verdict: low
   route: patch
   evidence: Cast test override assignment to `process.env.NODE_ENV = 'test' as any` ensuring clean TypeScript compilation.
+- finding: Provider route group served `/dashboard` instead of `/provider/dashboard`, risking collision and mismatching Epic requirements (`/provider/dashboard`, `/provider/login`, `/provider/reset-password`).
+  verdict: high
+  route: patch
+  evidence: Moved provider pages under `src/app/(provider)/provider/dashboard/page.tsx`, verified that `/provider/dashboard` returns 200 and `/dashboard` returns 404, and added Scenario 6 to `tests/unit/scaffolding.test.ts`.
 
 
 ## Design Notes
@@ -181,8 +185,8 @@ Per `ARCHITECTURE-SPINE.md` and `DESIGN.md`:
 1. **Route Group URLs:**
    - Next.js route groups `(group)` are organizational and do not add URL segments.
    - `src/app/(public)/page.tsx` maps to `/`.
-   - `src/app/(provider)/dashboard/page.tsx` maps to `/dashboard`.
-   - `src/app/(admin)/dashboard/page.tsx` maps to `/dashboard`.
+   - `src/app/(provider)/provider/dashboard/page.tsx` maps to `/provider/dashboard`.
+   - `src/app/(admin)/admin/dashboard/page.tsx` maps to `/admin/dashboard`.
 2. **Layering Invariants:**
    - Client components must never import `src/services/` or `src/lib/supabase/admin.ts`.
    - Privileged services must include `import 'server-only'` to guarantee tree-shaking and client bundle protection.
