@@ -6,6 +6,7 @@
   "scripts": {
     "verify:supabase": "tsx scripts/verify-supabase.ts",
     "test:unit": "tsx --test tests/unit/**/*.test.ts",
+    "test:spike": "tsx --test tests/spikes/**/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
