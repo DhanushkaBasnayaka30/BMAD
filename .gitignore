@@ -3,4 +3,5 @@
 !.env.local.example
 node_modules/
 .next/
+*.tsbuildinfo
 .DS_Store

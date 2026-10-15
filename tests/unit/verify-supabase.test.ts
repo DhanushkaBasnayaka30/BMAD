@@ -62,6 +62,7 @@ describe('Supabase Environment & Connectivity Verification', () => {
         cwd: tempDir, // cross-platform temp directory without .env.local
         env: {
           PATH: process.env.PATH,
+          NODE_ENV: 'test',
         },
       });
     } catch (err: any) {
@@ -80,6 +81,7 @@ describe('Supabase Environment & Connectivity Verification', () => {
         cwd: tempDir,
         env: {
           PATH: process.env.PATH,
+          NODE_ENV: 'test',
           NEXT_PUBLIC_SUPABASE_URL: 'https://non-existent-project-000000.supabase.co',
           NEXT_PUBLIC_SUPABASE_ANON_KEY: 'valid-format-anon-key-that-will-not-match',
           SUPABASE_SERVICE_ROLE_KEY: 'valid-format-service-role-key-that-will-not-match',
@@ -108,6 +110,7 @@ describe('Supabase Environment & Connectivity Verification', () => {
         cwd: tempDir,
         env: {
           PATH: process.env.PATH,
+          NODE_ENV: 'test',
           NEXT_PUBLIC_SUPABASE_URL: testUrl,
           NEXT_PUBLIC_SUPABASE_ANON_KEY: 'invalid.anon.key.that.will.fail',
           SUPABASE_SERVICE_ROLE_KEY: testServiceRoleKey,
@@ -134,6 +137,7 @@ describe('Supabase Environment & Connectivity Verification', () => {
         cwd: tempDir,
         env: {
           PATH: process.env.PATH,
+          NODE_ENV: 'test',
           NEXT_PUBLIC_SUPABASE_URL: testUrl,
           NEXT_PUBLIC_SUPABASE_ANON_KEY: testAnonKey,
           SUPABASE_SERVICE_ROLE_KEY: 'invalid.service.role.key.that.will.fail',
@@ -157,6 +161,7 @@ describe('Supabase Environment & Connectivity Verification', () => {
         cwd: tempDir,
         env: {
           PATH: process.env.PATH,
+          NODE_ENV: 'test',
           NEXT_PUBLIC_SUPABASE_URL: 'https://your-project-ref.supabase.co',
           NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOi...dummy_anon_key',
           SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOi...dummy_service_role_key',

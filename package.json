@@ -1,20 +1,39 @@
 {
   "name": "fixnear",
-  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "verify:supabase": "tsx scripts/verify-supabase.ts",
-    "test:unit": "tsx --test tests/unit/**/*.test.ts",
+    "test:unit": "tsx --conditions react-server --test tests/unit/**/*.test.ts",
     "test:spike": "tsx --test tests/spikes/**/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1"
+    "@supabase/supabase-js": "^2.49.1",
+    "@tanstack/react-query": "^5.104.2",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.57.0",
+    "next": "^15.5.28",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.7.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.6.1",
     "dotenv": "^16.4.7",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.5.28",
+    "postcss": "^8.5.30",
+    "tailwindcss": "^3.4.19",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }
