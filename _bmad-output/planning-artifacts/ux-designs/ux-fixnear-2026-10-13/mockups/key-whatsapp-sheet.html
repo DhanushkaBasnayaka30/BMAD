@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FixNear — WhatsApp Contact Bottom Sheet</title>
+  <style>
+    /* Governing Spines: DESIGN.md.Components.bottom-sheet, EXPERIENCE.md.Component Patterns.3 */
+    :root {
+      --surface-base: #F8F9FA;
+      --surface-raised: #FFFFFF;
+      --surface-sunken: #EDF0F2;
+      --ink-primary: #0F172A;
+      --ink-secondary: #475569;
+      --ink-muted: #94A3B8;
+      --ink-inverse: #FFFFFF;
+      --primary: #0F2942;
+      --accent-amber: #D97706;
+      --accent-amber-subtle: #FEF3C7;
+      --whatsapp: #25D366;
+      --border-subtle: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #E2E8F0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink-primary);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+    .mobile-frame {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface-base);
+      height: 844px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border: 6px solid #1E293B;
+    }
+    /* Background Profile (Blurred/Dimmed by Scrim) */
+    .profile-background {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      filter: blur(1px);
+    }
+    .profile-header {
+      background: var(--surface-raised);
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+    /* Scrim Overlay */
+    .scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      z-index: 100;
+    }
+    /* Bottom Sheet Container */
+    .bottom-sheet {
+      background: var(--surface-raised);
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+      padding: 20px 20px 32px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.18);
+    }
+    .drag-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border-strong);
+      border-radius: var(--radius-full);
+      margin: 0 auto 4px auto;
+    }
+    .sheet-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      line-height: 1.3;
+    }
+    .sheet-desc {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      line-height: 1.4;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .input-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-primary);
+    }
+    .text-input {
+      background: var(--surface-base);
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      height: 48px;
+      padding: 0 14px;
+      font-size: 16px;
+      color: var(--ink-primary);
+      width: 100%;
+    }
+    .text-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .helper-text {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+    .btn-whatsapp {
+      background: var(--whatsapp);
+      color: var(--ink-inverse);
+      border: none;
+      border-radius: var(--radius-full);
+      height: 48px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 6px;
+    }
+    .btn-skip {
+      background: none;
+      border: none;
+      color: var(--ink-secondary);
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: underline;
+      padding: 10px;
+      cursor: pointer;
+      text-align: center;
+      min-height: 44px;
+    }
+    .privacy-note {
+      font-size: 11px;
+      color: var(--ink-muted);
+      text-align: center;
+      line-height: 1.3;
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-frame">
+    <!-- Dimmed background surface -->
+    <div class="profile-background">
+      <div class="profile-header">
+        <h2 style="font-size: 20px; font-weight: 700;">Kamal Cool Care</h2>
+        <p style="font-size: 14px; color: #475569;">📍 Based in Negombo</p>
+        <div style="margin-top: 8px; font-size: 14px;">Visiting Fee: LKR 1,500</div>
+      </div>
+    </div>
+
+    <!-- Active Bottom Sheet Modal -->
+    <div class="scrim">
+      <div class="bottom-sheet">
+        <div class="drag-handle"></div>
+        <div>
+          <h2 class="sheet-title">Contact Kamal Cool Care</h2>
+          <p class="sheet-desc">Opens WhatsApp directly on your phone with a pre-filled service request.</p>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="cust-name">Your name (optional)</label>
+          <input type="text" id="cust-name" class="text-input" placeholder="e.g. Mary" value="Mary">
+          <span class="helper-text">Helps the technician address you when opening the chat.</span>
+        </div>
+
+        <button class="btn-whatsapp">
+          <span>💬 Continue to WhatsApp</span>
+        </button>
+
+        <button class="btn-skip">
+          Skip and open WhatsApp
+        </button>
+
+        <p class="privacy-note">
+          🔒 FixNear does not store your name or phone number. We respect your privacy.
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

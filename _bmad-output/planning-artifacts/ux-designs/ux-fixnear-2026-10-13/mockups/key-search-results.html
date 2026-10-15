@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FixNear — Search Results (Negombo)</title>
+  <style>
+    /* Governing Spines: DESIGN.md.Components.provider-card, EXPERIENCE.md.Component Patterns */
+    :root {
+      --surface-base: #F8F9FA;
+      --surface-raised: #FFFFFF;
+      --surface-sunken: #EDF0F2;
+      --ink-primary: #0F172A;
+      --ink-secondary: #475569;
+      --ink-muted: #94A3B8;
+      --ink-inverse: #FFFFFF;
+      --primary: #0F2942;
+      --accent-amber: #D97706;
+      --accent-amber-subtle: #FEF3C7;
+      --whatsapp: #25D366;
+      --border-subtle: #E2E8F0;
+      --border-strong: #CBD5E1;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-full: 9999px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background-color: #E2E8F0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink-primary);
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+    .mobile-frame {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface-base);
+      min-height: 844px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 6px solid #1E293B;
+    }
+    /* Sticky Header */
+    header {
+      background: var(--surface-raised);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .wordmark {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .wordmark span.near { color: var(--ink-primary); }
+    .wordmark span.dot { color: var(--accent-amber); }
+    .area-pill {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      cursor: pointer;
+    }
+    /* Main Content */
+    main {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+    /* Filter Bar */
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .category-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink-primary);
+    }
+    .chip-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .chip {
+      background: var(--surface-raised);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .chip.active {
+      background: var(--primary);
+      color: var(--ink-inverse);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+    /* Results Meta */
+    .results-count {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      margin-top: 4px;
+    }
+    /* Provider Card */
+    .provider-card {
+      background: var(--surface-raised);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .provider-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink-primary);
+      line-height: 1.3;
+    }
+    .badge-verified {
+      background: var(--accent-amber-subtle);
+      color: var(--accent-amber);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .location-tag {
+      font-size: 14px;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .location-tag.cross-area {
+      background: #FFFBEB;
+      color: #B45309;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      width: fit-content;
+      font-size: 13px;
+    }
+    .pricing-row {
+      font-size: 15px;
+      color: var(--ink-primary);
+    }
+    .pricing-row strong {
+      color: var(--ink-primary);
+      font-weight: 700;
+    }
+    .pricing-row span.model {
+      color: var(--ink-secondary);
+      font-size: 13px;
+    }
+    /* Photo Row */
+    .photo-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .photo-thumb {
+      height: 72px;
+      border-radius: 6px;
+      background: var(--surface-sunken);
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--ink-muted);
+      border: 1px solid var(--border-subtle);
+    }
+    .photo-placeholder {
+      grid-column: span 3;
+      height: 44px;
+      background: var(--surface-sunken);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--ink-secondary);
+      font-style: italic;
+      border: 1px dashed var(--border-strong);
+    }
+    /* WhatsApp Button */
+    .btn-whatsapp {
+      background: var(--whatsapp);
+      color: var(--ink-inverse);
+      border: none;
+      border-radius: var(--radius-full);
+      min-height: 48px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-frame">
+    <header>
+      <a href="#" class="wordmark">Fix<span class="near">Near</span><span class="dot">.</span></a>
+      <div class="area-pill" role="button" aria-label="Change Area">
+        <span>📍 Negombo</span>
+        <span>▾</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="filter-section">
+        <h1 class="category-title">Home Appliance Repairs</h1>
+        <div class="chip-scroll">
+          <div class="chip active">Refrigerator Repair</div>
+          <div class="chip">Washing Machine</div>
+          <div class="chip">Air Conditioner</div>
+          <div class="chip">Microwave</div>
+        </div>
+        <p class="results-count">3 verified technicians available in Negombo</p>
+      </section>
+
+      <!-- Provider 1: Exact In-Area Match -->
+      <article class="provider-card">
+        <div class="card-header">
+          <div>
+            <h2 class="provider-name">Kamal Cool Care</h2>
+            <div class="location-tag">📍 Based in Negombo</div>
+          </div>
+          <div class="badge-verified">🛡️ Verified</div>
+        </div>
+        <div class="pricing-row">
+          Visiting Fee: <strong>LKR 1,500</strong> <span class="model">• Varies by job</span>
+        </div>
+        <div class="photo-row">
+          <div class="photo-thumb" style="background:#E2E8F0; color:#475569; font-weight:600;">📷 Compressor</div>
+          <div class="photo-thumb" style="background:#E2E8F0; color:#475569; font-weight:600;">📷 Gas Refill</div>
+          <div class="photo-thumb" style="background:#E2E8F0; color:#475569; font-weight:600;">📷 Circuit Board</div>
+        </div>
+        <button class="btn-whatsapp">
+          <span>💬 Contact on WhatsApp</span>
+        </button>
+      </article>
+
+      <!-- Provider 2: Cross-Area Visiting Match -->
+      <article class="provider-card">
+        <div class="card-header">
+          <div>
+            <h2 class="provider-name">Priyantha Refrigeration</h2>
+            <div class="location-tag cross-area">🚗 Based in Kochchikade • Visits Negombo</div>
+          </div>
+          <div class="badge-verified">🛡️ Verified</div>
+        </div>
+        <div class="pricing-row">
+          Visiting Fee: <strong>LKR 1,800</strong> <span class="model">• Varies by job</span>
+        </div>
+        <div class="photo-row">
+          <div class="photo-thumb" style="background:#E2E8F0; color:#475569; font-weight:600;">📷 Workshop</div>
+          <div class="photo-thumb" style="background:#E2E8F0; color:#475569; font-weight:600;">📷 Inverter Board</div>
+          <div class="photo-thumb" style="background:#E2E8F0; color:#475569; font-weight:600;">📷 Coil Repair</div>
+        </div>
+        <button class="btn-whatsapp">
+          <span>💬 Contact on WhatsApp</span>
+        </button>
+      </article>
+
+      <!-- Provider 3: Exact In-Area without photos -->
+      <article class="provider-card">
+        <div class="card-header">
+          <div>
+            <h2 class="provider-name">Silva Appliance Services</h2>
+            <div class="location-tag">📍 Based in Negombo</div>
+          </div>
+          <div class="badge-verified">🛡️ Verified</div>
+        </div>
+        <div class="pricing-row">
+          Visiting Fee: <strong>LKR 1,200</strong> <span class="model">• Starting from</span>
+        </div>
+        <div class="photo-placeholder">
+          🔧 No work photos uploaded yet
+        </div>
+        <button class="btn-whatsapp">
+          <span>💬 Contact on WhatsApp</span>
+        </button>
+      </article>
+    </main>
+  </div>
+</body>
+</html>
